@@ -11,11 +11,10 @@ pub fn android_main(app: android_activity::AndroidApp) {
     let _ = eframe::run_native(
         "FilmCraft",
         options,
-        Box::new(|cc| {
-            let mut editor = filmcraft_ui_egui::FilmcraftApp::new(filmcraft_engine::Session::default());
-            if let Some(render_state) = cc.wgpu_render_state.clone() {
-                editor.set_wgpu(render_state);
-            }
+        Box::new(|_cc| {
+            let editor = filmcraft_ui_egui::FilmcraftApp::new(filmcraft_engine::Session::default());
+            // Avoid Mali Vulkan driver crash in FilmCraft GPU compositor during startup.
+            // egui still renders through eframe wgpu; only preview compositing is disabled.
             Ok(Box::new(editor))
         }),
     );
