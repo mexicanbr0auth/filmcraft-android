@@ -17,6 +17,22 @@ pub fn android_main(app: android_activity::AndroidApp) {
             // entire multi-panel desktop layout beyond the phone screen.
             cc.egui_ctx.set_zoom_factor(1.2);
             let mut editor = filmcraft_ui_egui::FilmcraftApp::new(filmcraft_engine::Session::default());
+            // Compact default for phones: large preview above a useful timeline;
+            // project/media and properties remain accessible as tabs.
+            use filmcraft_ui_egui::dock::{DockNode, PanelKind as P, SplitSize};
+            let tabs = |panels: Vec<P>| DockNode::Tabs { panels, active: 0 };
+            editor.ui.dock = DockNode::Split {
+                vertical: true,
+                size: SplitSize::Ratio(0.45),
+                a: Box::new(DockNode::Split {
+                    vertical: false,
+                    size: SplitSize::Ratio(0.66),
+                    a: Box::new(tabs(vec![P::Program, P::Source])),
+                    b: Box::new(tabs(vec![P::Project, P::MediaBrowser, P::Properties, P::EffectControls])),
+                }),
+                b: Box::new(tabs(vec![P::Timeline, P::Effects, P::AudioMeters])),
+            };
+
             if let Some(root) = private_files.as_ref() {
                 let projects = root.join("projects");
                 if std::fs::create_dir_all(&projects).is_ok() {
