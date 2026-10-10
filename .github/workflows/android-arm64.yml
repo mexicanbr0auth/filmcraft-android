@@ -5,6 +5,7 @@ on:
     paths:
       - 'crates/**'
       - 'apps/**'
+      - 'android/**'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - '.github/workflows/android-arm64.yml'
