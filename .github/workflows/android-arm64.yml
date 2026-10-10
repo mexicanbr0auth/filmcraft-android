@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          cargo check -p filmcraft-android --target aarch64-linux-android 2>&1 | tee android-check.log
+          cargo build --release -p filmcraft-android --target aarch64-linux-android 2>&1 | tee android-check.log
       - name: Upload diagnostic log
         if: always()
         uses: actions/upload-artifact@v4
@@ -36,3 +36,19 @@ jobs:
           name: android-arm64-check-log
           path: android-check.log
           if-no-files-found: ignore
+
+      - name: Stage native library
+        run: |
+          mkdir -p android/app/src/main/jniLibs/arm64-v8a
+          cp target/aarch64-linux-android/release/libfilmcraft_android.so android/app/src/main/jniLibs/arm64-v8a/
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - name: Assemble debug APK
+        run: gradle -p android :app:assembleDebug --no-daemon
+      - name: Upload Android APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FilmCraft-Android-arm64-APK
+          path: android/app/build/outputs/apk/debug/*.apk
