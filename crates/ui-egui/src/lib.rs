@@ -109,6 +109,8 @@ pub struct AudioDevices {
 /// Host hooks for native file dialogs etc.
 #[derive(Default)]
 pub struct HostHooks {
+    /// Android SAF imports copied into app-private storage, queued for the editor.
+    pub android_import_dir: Option<std::path::PathBuf>,
     pub pick_files: Option<Box<dyn FnMut(&[&str]) -> Vec<String>>>,
     /// The cursor in physical screen pixels. Where the windowing layer reports no pointer while files are dragged in from the OS (Windows), a drop is placed where this says it landed.
     pub cursor_screen_position: Option<Box<dyn Fn() -> Option<(i32, i32)>>>,
@@ -929,6 +931,37 @@ impl FilmcraftApp {
     fn advance_playback(&mut self, ctx: &egui::Context) {
         if !self.playback.playing {
             return;
+        }
+        #[cfg(target_os = "android")]
+        if let Some(dir) = self.hooks.android_import_dir.as_ref() {
+            let paths: Vec<String> = std::fs::read_dir(dir)
+                .into_iter().flatten().flatten()
+                .map(|entry| entry.path())
+                .filter(|path| path.is_file() && path.extension().is_some_and(|e| e != "part"))
+                .filter_map(|path| path.to_str().map(str::to_owned))
+                .collect();
+            if !paths.is_empty() {
+                let stored = dir.parent().unwrap_or(dir).join("media");
+                let _ = std::fs::create_dir_all(&stored);
+                let mut imported = Vec::new();
+                for path in &paths {
+                    let from = std::path::Path::new(path);
+                    if let Some(name) = from.file_name() {
+                        let dest = stored.join(name);
+                        if std::fs::rename(from, &dest).is_ok() {
+                            imported.push(dest.to_string_lossy().into_owned());
+                        }
+                    }
+                }
+                if !imported.is_empty() {
+                    let bin = self.import_bin().0;
+                    match self.session.execute("file.import", json!({"paths": imported, "bin": bin})) {
+                        Ok(_) => self.ui.status = "Android media imported".into(),
+                        Err(err) => self.ui.status = format!("Android import: {err}"),
+                    }
+                }
+            }
+            ctx.request_repaint_after(std::time::Duration::from_secs(1));
         }
         let now = ctx.input(|i| i.time);
         if let Some(since) = self.playback.preroll {

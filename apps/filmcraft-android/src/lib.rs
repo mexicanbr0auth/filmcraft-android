@@ -35,6 +35,9 @@ pub fn android_main(app: android_activity::AndroidApp) {
 
             if let Some(root) = private_files.as_ref() {
                 let projects = root.join("projects");
+                let incoming = root.join("incoming");
+                let _ = std::fs::create_dir_all(&incoming);
+                editor.hooks.android_import_dir = Some(incoming);
                 if std::fs::create_dir_all(&projects).is_ok() {
                     let save_dir = projects.clone();
                     editor.hooks.pick_save = Some(Box::new(move |name| {
