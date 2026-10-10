@@ -54,6 +54,12 @@ pub fn show(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
         }
         x += gw + 24.0;
     }
+    // Phone screens cannot fit desktop menus, project title and the entire
+    // quick-action cluster in one row. Keep the primary mode navigation usable.
+    #[cfg(target_os = "android")]
+    if rect.width() < 1100.0 {
+        return;
+    }
     let mut left_end = x;
     // In-window menus when there is no native menu bar.
     if app.ui.show_menu_bar {
