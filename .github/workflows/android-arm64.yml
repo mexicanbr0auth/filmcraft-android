@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          cargo check -p filmcraft-ui-egui --target aarch64-linux-android 2>&1 | tee android-check.log
+          cargo check -p filmcraft-android --target aarch64-linux-android 2>&1 | tee android-check.log
       - name: Upload diagnostic log
         if: always()
         uses: actions/upload-artifact@v4
