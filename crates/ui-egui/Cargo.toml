@@ -28,8 +28,6 @@ filmcraft-scopes = { workspace = true }
 egui = { workspace = true }
 eframe = { workspace = true, features = ["default_fonts", "wgpu"] }
 
-[target.'cfg(not(target_os = "android"))'.dependencies]
-eframe = { workspace = true, features = ["accesskit"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 log = { workspace = true }
@@ -62,3 +60,6 @@ toml = "1"
 # Select the Android NativeActivity backend used by winit/eframe.
 [target.'cfg(target_os = "android")'.dependencies]
 android-activity = { version = "0.6", features = ["native-activity"] }
+
+[target.'cfg(not(target_os = "android"))'.dependencies]
+eframe = { workspace = true, features = ["accesskit"] }
