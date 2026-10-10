@@ -3,7 +3,6 @@
 #[cfg(target_os = "android")]
 #[unsafe(no_mangle)]
 pub fn android_main(app: android_activity::AndroidApp) {
-    android_activity::AndroidApp::set_text_input_state(&app, android_activity::TextInputState::default());
     let options = eframe::NativeOptions {
         android_app: Some(app),
         renderer: eframe::Renderer::Wgpu,
