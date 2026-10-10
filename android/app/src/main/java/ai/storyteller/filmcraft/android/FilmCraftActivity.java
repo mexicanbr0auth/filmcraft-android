@@ -23,7 +23,7 @@ public class FilmCraftActivity extends NativeActivity {
     }
 
     @Override
-    protected void onWindowFocusChanged(boolean hasFocus) {
+    public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) enterImmersiveMode();
     }
