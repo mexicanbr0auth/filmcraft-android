@@ -1753,12 +1753,12 @@ impl eframe::App for FilmcraftApp {
             {
                 // The desktop theme has tiny click targets on phones. Apply the
                 // touch overrides AFTER theme installation so they are not reset.
-                let mut style = (*ctx.style()).clone();
+                let mut style = (*ctx.style_of(egui::Theme::Dark)).clone();
                 style.spacing.interact_size.y = style.spacing.interact_size.y.max(38.0);
                 style.spacing.button_padding = egui::vec2(12.0, 9.0);
                 style.spacing.item_spacing.y = style.spacing.item_spacing.y.max(7.0);
                 style.interaction.tooltip_delay = 0.8;
-                ctx.set_style(style);
+                ctx.set_style_of(egui::Theme::Dark, style);
             }
             self.styled = true;
             ctx.request_repaint();
