@@ -3,7 +3,7 @@
 #[cfg(target_os = "android")]
 #[unsafe(no_mangle)]
 pub fn android_main(app: android_activity::AndroidApp) {
-    let private_files = app.config().internal_data_path.clone();
+    let private_files = app.internal_data_path();
     let options = eframe::NativeOptions {
         android_app: Some(app),
         renderer: eframe::Renderer::Wgpu,
