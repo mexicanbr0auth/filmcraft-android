@@ -1749,6 +1749,17 @@ impl eframe::App for FilmcraftApp {
             if japanese_missing || (self.ui.language == i18n::Language::ZhCn && !i18n::chinese_font_available()) {
                 self.ui.language = i18n::Language::En;
             }
+            #[cfg(target_os = "android")]
+            {
+                // The desktop theme has tiny click targets on phones. Apply the
+                // touch overrides AFTER theme installation so they are not reset.
+                let mut style = (*ctx.style()).clone();
+                style.spacing.interact_size.y = style.spacing.interact_size.y.max(38.0);
+                style.spacing.button_padding = egui::vec2(12.0, 9.0);
+                style.spacing.item_spacing.y = style.spacing.item_spacing.y.max(7.0);
+                style.interaction.tooltip_delay = 0.8;
+                ctx.set_style(style);
+            }
             self.styled = true;
             ctx.request_repaint();
         } else {

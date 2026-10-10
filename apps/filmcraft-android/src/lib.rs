@@ -11,7 +11,10 @@ pub fn android_main(app: android_activity::AndroidApp) {
     let _ = eframe::run_native(
         "FilmCraft",
         options,
-        Box::new(|_cc| {
+        Box::new(|cc| {
+            // Increase physical hit targets for fingers without magnifying the
+            // entire multi-panel desktop layout beyond the phone screen.
+            cc.egui_ctx.set_zoom_factor(1.2);
             let editor = filmcraft_ui_egui::FilmcraftApp::new(filmcraft_engine::Session::default());
             // Avoid Mali Vulkan driver crash in FilmCraft GPU compositor during startup.
             // egui still renders through eframe wgpu; only preview compositing is disabled.
